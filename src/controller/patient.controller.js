@@ -18,7 +18,7 @@ export const getPatients = (req, res) => {
     if (!results){
       res.status(HttpStatus.OK.code)
         .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No patients found`));
-    }else {
+    } else {
       res.status(HttpStatus.OK.code)
         .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patients retrived`, { patients: results }));
     }
@@ -26,16 +26,18 @@ export const getPatients = (req, res) => {
 };
 
 export const createPatient = (req, res) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching patients`);
-  database.query(QUERY.SELECT_PATIENTS, (error, results) => {
+  logger.info(`${req.method} ${req.originalUrl}, creating patient`);
+  database.query(QUERY.CREATE_PATIENTS, (error, results) => {
     if (!results){
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No patients found`));
-    }else {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patients retrived`, { patients: results }));
+      logger.error(error.message);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+    } else {
+      const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
+      res.status(HttpStatus.CREATED.code)
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `patients retrived`, { patient }));
     }
-  })
+  });
 };
 
 export default HttpStatus;
