@@ -10,3 +10,5 @@ patientRoutes.route('/:id')
   .get(getPatient)
   .put(updatePatient)
   .delete(deletePatient);
+
+export default patientRoutes;
