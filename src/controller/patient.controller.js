@@ -59,7 +59,7 @@ export const createPatient = (req, res) => {
           );
       } else {
         const patient = {
-          id: results.insertedId,
+          id: results.insertId,
           ...req.body,
           created_at: new Date(),
         };
