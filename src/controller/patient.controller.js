@@ -1,5 +1,5 @@
 import database from '../config/mysql.config.js';
-import Response from '../domain/response.js';
+import Response from '../domain/responce.js';
 import logger from '../util/loggerr.js';
 import QUERY from '../query/patient.query.js';
 
@@ -15,40 +15,93 @@ const HttpStatus = {
 export const getPatients = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching patients`);
   database.query(QUERY.SELECT_PATIENTS, (error, results) => {
-    if (!results){
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No patients found`));
+    if (!results) {
+      res
+        .status(HttpStatus.OK.code)
+        .send(
+          new Response(
+            HttpStatus.OK.code,
+            HttpStatus.OK.status,
+            `No patients found`
+          )
+        );
     } else {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patients retrived`, { patients: results }));
+      res
+        .status(HttpStatus.OK.code)
+        .send(
+          new Response(
+            HttpStatus.OK.code,
+            HttpStatus.OK.status,
+            `patients retrived`,
+            { patients: results }
+          )
+        );
     }
-  })
+  });
 };
 
 export const createPatient = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating patient`);
-  database.query(QUERY.CREATE_PATIENT, Object.values(req.body), (error, results) => {
-    if (!results){
-      logger.error(error.message);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    } else {
-      const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
-      res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `patient created`, { patient }));
+  database.query(
+    QUERY.CREATE_PATIENT,
+    Object.values(req.body),
+    (error, results) => {
+      if (!results) {
+        logger.error(error.message);
+        res
+          .status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+          .send(
+            new Response(
+              HttpStatus.INTERNAL_SERVER_ERROR.code,
+              HttpStatus.INTERNAL_SERVER_ERROR.status,
+              `Error occurred`
+            )
+          );
+      } else {
+        const patient = {
+          id: results.insertedId,
+          ...req.body,
+          created_at: new Date(),
+        };
+        res
+          .status(HttpStatus.CREATED.code)
+          .send(
+            new Response(
+              HttpStatus.CREATED.code,
+              HttpStatus.CREATED.status,
+              `patient created`,
+              { patient }
+            )
+          );
+      }
     }
-  });
+  );
 };
 
 export const getPatient = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching patient`);
   database.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) => {
-    if (!results[0]){
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `patient by id ${req.params.id} was not found`));
+    if (!results[0]) {
+      res
+        .status(HttpStatus.NOT_FOUND.code)
+        .send(
+          new Response(
+            HttpStatus.NOT_FOUND.code,
+            HttpStatus.NOT_FOUND.status,
+            `patient by id ${req.params.id} was not found`
+          )
+        );
     } else {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patient retrived`, results[0]));
+      res
+        .status(HttpStatus.OK.code)
+        .send(
+          new Response(
+            HttpStatus.OK.code,
+            HttpStatus.OK.status,
+            `patient retrived`,
+            results[0]
+          )
+        );
     }
   });
 };
@@ -56,21 +109,47 @@ export const getPatient = (req, res) => {
 export const updatePatient = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching patient`);
   database.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) => {
-    if (!results[0]){
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `patient by id ${req.params.id} was not found`));
+    if (!results[0]) {
+      res
+        .status(HttpStatus.NOT_FOUND.code)
+        .send(
+          new Response(
+            HttpStatus.NOT_FOUND.code,
+            HttpStatus.NOT_FOUND.status,
+            `patient by id ${req.params.id} was not found`
+          )
+        );
     } else {
       logger.info(`${req.method} ${req.originalUrl}, updating patient`);
-      database.query(QUERY.UPDATE_PATIENT, [...Object.values(req.body) ,req.params.id], (error, results) => {
-        if(!error) {
-          res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patient updated`, { id: req.params.id, ...req.body }));
-        } else {
-          logger.error(error.message);
-          res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+      database.query(
+        QUERY.UPDATE_PATIENT,
+        [...Object.values(req.body), req.params.id],
+        (error, results) => {
+          if (!error) {
+            res
+              .status(HttpStatus.OK.code)
+              .send(
+                new Response(
+                  HttpStatus.OK.code,
+                  HttpStatus.OK.status,
+                  `patient updated`,
+                  { id: req.params.id, ...req.body }
+                )
+              );
+          } else {
+            logger.error(error.message);
+            res
+              .status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+              .send(
+                new Response(
+                  HttpStatus.INTERNAL_SERVER_ERROR.code,
+                  HttpStatus.INTERNAL_SERVER_ERROR.status,
+                  `Error occurred`
+                )
+              );
+          }
         }
-      });
+      );
     }
   });
 };
@@ -78,15 +157,29 @@ export const updatePatient = (req, res) => {
 export const deletePatient = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting patient`);
   database.query(QUERY.DELETE_PATIENT, [req.params.id], (error, results) => {
-    if (!results.affectedRows > 0){
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patient deleted`, results[0]));
+    if (!results.affectedRows > 0) {
+      res
+        .status(HttpStatus.OK.code)
+        .send(
+          new Response(
+            HttpStatus.OK.code,
+            HttpStatus.OK.status,
+            `patient deleted`,
+            results[0]
+          )
+        );
     } else {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `patient by id ${req.params.id} was not found`));
+      res
+        .status(HttpStatus.NOT_FOUND.code)
+        .send(
+          new Response(
+            HttpStatus.NOT_FOUND.code,
+            HttpStatus.NOT_FOUND.status,
+            `patient by id ${req.params.id} was not found`
+          )
+        );
     }
   });
 };
-
 
 export default HttpStatus;
