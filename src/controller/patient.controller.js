@@ -27,7 +27,7 @@ export const getPatients = (req, res) => {
 
 export const createPatient = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating patient`);
-  database.query(QUERY.CREATE_PATIENTS, Object.values(req.body), (error, results) => {
+  database.query(QUERY.CREATE_PATIENT, Object.values(req.body), (error, results) => {
     if (!results){
       logger.error(error.message);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -35,22 +35,21 @@ export const createPatient = (req, res) => {
     } else {
       const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
       res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `patients retrived`, { patient }));
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `patient created`, { patient }));
     }
   });
 };
 
-export const createPatient1 = (req, res) => {
-  logger.info(`${req.method} ${req.originalUrl}, creating patient`);
-  database.query(QUERY.CREATE_PATIENTS, (error, results) => {
-    if (!results){
+export const getPatient = (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}, fetching patient`);
+  database.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) => {
+    if (!results[0]){
       logger.error(error.message);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `patient by id ${req.params.id} was not found`));
     } else {
-      const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
-      res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `patients retrived`, { patient }));
+      res.status(HttpStatus.OK.code)
+        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patient retrived`, results[0]));
     }
   });
 };
