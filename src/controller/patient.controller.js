@@ -1,5 +1,5 @@
 import database from '../config/mysql.config.js';
-import Responce from '../domain/responce.js';
+import Response from '../domain/response.js';
 import logger from '../util/loggerr.js';
 import QUERY from '../query/patient.query.js';
 
