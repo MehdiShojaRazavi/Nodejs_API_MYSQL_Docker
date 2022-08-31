@@ -54,4 +54,26 @@ export const getPatient = (req, res) => {
   });
 };
 
+export const updatePatient = (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}, fetching patient`);
+  database.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) => {
+    if (!results[0]){
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `patient by id ${req.params.id} was not found`));
+    } else {
+      logger.info(`${req.method} ${req.originalUrl}, updating patient`);
+      database.query(QUERY.UPDATE_PATIENT, [...Object.values(req.body) ,req.params.id], (error, results) => {
+        if(!error) {
+          res.status(HttpStatus.OK.code)
+          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `patient updated`, { id: req.params.id, ...req.body }));
+        } else {
+          logger.error(error.message);
+          res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+        }
+      });
+    }
+  });
+};
+
 export default HttpStatus;
