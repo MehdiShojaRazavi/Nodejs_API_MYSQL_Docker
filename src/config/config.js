@@ -9,7 +9,11 @@ dotenv.config({
 });
 
 export default {
-    NODE_ENV : process.env.NODE_ENV || 'development',
-    HOST : process.env.HOST || 'localhost',
-    PORT : process.env.PORT || 3000
+    DB_HOST: process.env.DB_HOST || 'development',
+    DB_PORT: process.env.DB_PORT || 'localhost',
+    DB_USER: process.env.DB_USER || 3000,
+    DB_PASSWOR: process.env.DB_PASSWORD || 'letmein',
+    DB_NAME: process.env.DB_NAME || 'patientsdb',
+    DB_CONNECTION_LIMIT: process.env.DB_CONNECTION_LIMIT || 20,
+    SERVER_PORT: process.env.SERVER_PORT || 3000
 }
