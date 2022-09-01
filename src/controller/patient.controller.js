@@ -58,11 +58,12 @@ export const createPatient = (req, res) => {
             )
           );
       } else {
-        const patient = {
-          id: results.insertId,
-          ...req.body,
-          created_at: new Date(),
-        };
+        // const patient = {
+        //   id: results.insertId,
+        //   ...req.body,
+        //   created_at: new Date(),
+        // };
+        const patient = results[0][0];
         res
           .status(HttpStatus.CREATED.code)
           .send(
